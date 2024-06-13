@@ -84,6 +84,100 @@ begin
 end;
 {$endregion}
 
+procedure TFrmMain.FormCreate(Sender: TObject);
+begin
+  ReportMemoryLeaksOnShutdown := DebugHook <> 0;
+end;
+
+{$region 'Multiline strings'}
+procedure TFrmMain.BtnMultiLineStringsClick(Sender: TObject);
+begin
+  {
+    https://docwiki.embarcadero.com/RADStudio/Athens/en/String_Types_(Delphi)
+
+    Multiline string indentation and formatting logic are used very specifically. A multiline string treats a leading white space this way:
+
+    The closing ‘’’ needs to be in a line of its own, not at the end of the last line of the string itself.
+    The indentation of the closing ‘’’ determines the base indentation of the entire string.
+    Each blank space before that indentation level is removed in the final string for each of the lines.
+    None of the lines can be less indented than the base indentation (the closing ‘’’). This is a compiler error, showing also as Error Insight.
+    The last newline before the closing ‘’’ is omitted. If you want to have a final new line, you should add an empty line at the end.
+
+    Note: Notice that the triple quotes (”’) can also be replaced with a large odd number of quotes, like 5 or 7. This allows embedding an actual triple quote within a multiline string. For example:
+  }
+
+// https://docwiki.embarcadero.com/RADStudio/Athens/en/TEXTBLOCK
+// you can used to define the style of line breaks on the multi line strings
+//{$TEXTBLOCK NATIVE/CR/LF/CRLF [<ident>]}
+
+{$TEXTBLOCK NATIVE}
+
+  Memo1.Clear;
+
+  var Text: string;
+
+  Text := '''
+    Text, text, text, end
+    Text, text, text, end
+    Text, text, text, end
+    Text, text, text, end
+
+    ''';
+
+  Memo1.Lines.Add(Text);
+  Memo1.Lines.Add(StringOfChar('-', 40));
+
+  Text := '''''''
+    Text, text, text, end
+    Text, text, text, end
+    Text, text, text, end
+    Text, text, text, end
+  ''''''';
+
+  Memo1.Lines.Add(Text);
+end;
+{$endregion}
+
+{$region 'Inline Variables'}
+procedure TFrmMain.BtnInLineVarsClick(Sender: TObject);
+begin
+  // https://blog.idera.com/developer-tools/introducing-inline-variables-in-the-delphi-language/
+  // https://docwiki.embarcadero.com/RADStudio/Athens/en/Anonymous_Methods_in_Delphi
+
+  var Number1: Double := 1.23;
+  var Number2 := 1.23;
+  var Number3 := 123;
+  var Number4: Double := 123;
+
+  var String1 := GetAnyString;
+  var String2: string := 'xxxxxxx';
+  var String3: AnsiString := 'xxxxxxx';
+
+  var String4 := function(Str: string): Integer
+    begin
+      Result := Length(Str);
+    end;
+
+  var String5 := function(Str: string): string
+    begin
+      Result := 'Char count: ' + Length(Str).ToString;
+    end;
+
+  Memo1.Clear;
+
+  Memo1.Lines.add(Number1.ToString + '  ' + GetVarType(Number1));
+  Memo1.Lines.add(Number2.ToString + '  ' + GetVarType(Number2));
+  Memo1.Lines.add(Number3.ToString + '  ' + GetVarType(Number3));
+  Memo1.Lines.add(Number4.ToString + '  ' + GetVarType(Number4));
+
+  Memo1.Lines.add(String1 + '  ' + GetVarType(String1));
+  Memo1.Lines.add(String2 + '  ' + GetVarType(String2));
+  Memo1.Lines.add(String3 + '  ' + GetVarType(String3));
+  Memo1.Lines.add(String4('any string').ToString + '  ' + GetVarType(String4));
+  Memo1.Lines.add(string(String5('any string')) + '  ' + GetVarType(String4));
+end;
+{$endregion}
+
 {$region 'Variable escope'}
 procedure TFrmMain.BtnEscopeClick(Sender: TObject);
 var
@@ -142,99 +236,5 @@ begin
   Memo1.Lines.Add('var1 ' + Var1);
 end;
 {$endregion}
-
-{$region 'Inline Variables'}
-procedure TFrmMain.BtnInLineVarsClick(Sender: TObject);
-begin
-  // https://blog.idera.com/developer-tools/introducing-inline-variables-in-the-delphi-language/
-  // https://docwiki.embarcadero.com/RADStudio/Athens/en/Anonymous_Methods_in_Delphi
-
-  var Number1: Double := 1.23;
-  var Number2 := 1.23;
-  var Number3 := 123;
-  var Number4: Double := 123;
-
-  var String1 := GetAnyString;
-  var String2: string := 'xxxxxxx';
-  var String3: AnsiString := 'xxxxxxx';
-
-  var String4 := function(Str: string): Integer
-    begin
-      Result := Length(Str);
-    end;
-
-  var String5 := function(Str: string): string
-    begin
-      Result := 'Char count: ' + Length(Str).ToString;
-    end;
-
-  Memo1.Clear;
-
-  Memo1.Lines.add(Number1.ToString + '  ' + GetVarType(Number1));
-  Memo1.Lines.add(Number2.ToString + '  ' + GetVarType(Number2));
-  Memo1.Lines.add(Number3.ToString + '  ' + GetVarType(Number3));
-  Memo1.Lines.add(Number4.ToString + '  ' + GetVarType(Number4));
-
-  Memo1.Lines.add(String1 + '  ' + GetVarType(String1));
-  Memo1.Lines.add(String2 + '  ' + GetVarType(String2));
-  Memo1.Lines.add(String3 + '  ' + GetVarType(String3));
-  Memo1.Lines.add(String4('any string').ToString + '  ' + GetVarType(String4));
-  Memo1.Lines.add(string(String5('any string')) + '  ' + GetVarType(String4));
-end;
-{$endregion}
-
-{$region 'Multiline strings'}
-procedure TFrmMain.BtnMultiLineStringsClick(Sender: TObject);
-begin
-  {
-    https://docwiki.embarcadero.com/RADStudio/Athens/en/String_Types_(Delphi)
-
-    Multiline string indentation and formatting logic are used very specifically. A multiline string treats a leading white space this way:
-
-    The closing ‘’’ needs to be in a line of its own, not at the end of the last line of the string itself.
-    The indentation of the closing ‘’’ determines the base indentation of the entire string.
-    Each blank space before that indentation level is removed in the final string for each of the lines.
-    None of the lines can be less indented than the base indentation (the closing ‘’’). This is a compiler error, showing also as Error Insight.
-    The last newline before the closing ‘’’ is omitted. If you want to have a final new line, you should add an empty line at the end.
-
-    Note: Notice that the triple quotes (”’) can also be replaced with a large odd number of quotes, like 5 or 7. This allows embedding an actual triple quote within a multiline string. For example:
-  }
-
-// https://docwiki.embarcadero.com/RADStudio/Athens/en/TEXTBLOCK
-// you can used to define the style of line breaks on the multi line strings
-//{$TEXTBLOCK NATIVE/CR/LF/CRLF [<ident>]}
-
-{$TEXTBLOCK NATIVE}
-
-  Memo1.Clear;
-
-  var Text: string;
-
-  Text := '''
-    Text, text, text, end
-    Text, text, text, end
-    Text, text, text, end
-    Text, text, text, end
-
-    ''';
-
-  Memo1.Lines.Add(Text);
-  Memo1.Lines.Add(StringOfChar('-', 40));
-
-  Text := '''''''
-    Text, text, text, end
-    Text, text, text, end
-    Text, text, text, end
-    Text, text, text, end
-  ''''''';
-
-  Memo1.Lines.Add(Text);
-end;
-{$endregion}
-
-procedure TFrmMain.FormCreate(Sender: TObject);
-begin
-  ReportMemoryLeaksOnShutdown := DebugHook <> 0;
-end;
 
 end.
