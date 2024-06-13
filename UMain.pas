@@ -209,6 +209,7 @@ begin
   Memo1.Clear;
 
   var Text: string;
+
   Text := '''
     Text, text, text, end
     Text, text, text, end
