@@ -200,6 +200,12 @@ begin
     Note: Notice that the triple quotes (”’) can also be replaced with a large odd number of quotes, like 5 or 7. This allows embedding an actual triple quote within a multiline string. For example:
   }
 
+// https://docwiki.embarcadero.com/RADStudio/Athens/en/TEXTBLOCK
+// you can used to define the style of line breaks on the multi line strings
+//{$TEXTBLOCK NATIVE/CR/LF/CRLF [<ident>]}
+
+{$TEXTBLOCK NATIVE}
+
   Memo1.Clear;
 
   var Text: string;
